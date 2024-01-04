@@ -2,7 +2,7 @@
 
 # Incident Response Management
 
-This repository holds the code, binary files and card templates for the **Incident Management & Response** project run by the [University of the West of England (UWE)](https://www.uwe.ac.uk/). 
+This repository holds the code, binary files and card templates for the **Managing cyber incidents - growing into a cyber mindset using the Incident Response card game** project run by the [University of the West of England (UWE)](https://www.uwe.ac.uk/). 
 
 The project itself aims to educate players on the complexities of incident management. Students work through a turn based card game trying to gain capital and repuation while managing incidents. There are 3 main card types:
 
