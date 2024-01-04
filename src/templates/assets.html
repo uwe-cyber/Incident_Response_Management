@@ -1,0 +1,159 @@
+<!-- templates/assets.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Management</title>
+    <style>
+        /* Styles for the container and divs */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            height: 100vh;
+        }
+
+        .left-div, .center-div, .right-div {
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* Style for the left div */
+        .left-div {
+            width: 20%;
+        }
+
+        /* Style for the middle div */
+        .center-div {
+            width: 50%;
+            overflow-y: auto;
+        }
+
+        /* Style for the right div */
+        .right-div {
+            width: 25%;
+        }
+
+        /* Style for each selected image container */
+        .selected-image-container {
+            text-align: center;
+            margin: 10px;
+        }
+
+        /* Style for the selected images */
+        .selected-image {
+            width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        
+        /* Style for the selected images */
+        .center-image {
+            width: 60%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .test-button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .opportunity-image-container {
+		    position: relative;
+		    display: inline-block;
+		    margin: 5px;
+		    text-align: center;
+		    align-items: center;
+		    display: flex;
+		    flex-direction: column;
+		    align-items: center;
+		}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Div -->
+        <div class="left-div">
+		<h2>Active Threats</h2>
+		<div>Current Capital: ${{ .Capital }}</div> <!-- Display the totalValue here -->
+		{{ range $image, $cost := .ActiveThreats }}
+		<div class="selected-image-container">
+		    <img class="selected-image" src="Cards/{{ $image }}" alt="{{ $image }}">
+		</div>
+		{{ end }}
+	</div>
+
+        <!-- Middle Div with Test button and Random Image -->
+        <div class="center-div">
+            <h1>Avaliable Assets</h1>
+            <br>
+            {{ range $image, $cost := .ImageInfo }}
+			<label class="opportunity-image-container" for="{{ $image }}">
+				<img class="center-image opportunity-image" src="Cards/{{ $image }}" alt="{{ $image }}">
+				<div class="cost-label">Cost: ${{ $cost }}</div>
+				<!-- Set the cost to 0 for opportunity cards -->
+				<input type="radio" id="image" name="asset" value="{{ $image }};{{ $cost }}" data-cost="{{ $cost }}">
+			</label>
+			{{ end }}
+			<br>
+			<!-- Form to submit data -->
+			<form id="assetForm" action="/turn" method="post">
+				<input type="hidden" id="assetToSell" name="assetToSell">
+				<input type="hidden" id="assetDetails" name="assetDetails">
+			</form>
+            <br>
+            <button class="test-button" onclick="handleButtonClick()">Next Turn</button>
+        </div>
+
+        <!-- Right Div -->
+        <div class="right-div">
+			<h2>Active Asset</h2>
+			<div> These Can Be Sold to Regain Capital </div>
+			{{ range $image, $cost := .AssetImages }}
+			<div class="selected-image-container">
+				<img class="selected-image" src="Cards/{{ $image }}" alt="{{ $image }}">
+				<div>Cost: ${{ $cost }}</div>
+				<input type="radio" id="image" id="assetToSell" name="assetToSell" value="{{ $image }};{{ $cost }}" data-cost="{{ $cost }}">
+			</div>
+			{{ end }}
+		</div>
+    </div>
+    
+    <script>
+			function handleButtonClick() {
+				console.log("Test");
+				// Set a cookie indicating the Test button was clicked
+				document.cookie = "testClicked=true; path=/";
+
+				// Gather selected opportunity details
+				var selectedAsset = document.querySelector('input[name="asset"]:checked');
+				var assetDetails = selectedAsset ? selectedAsset.value : null;
+
+				// Gather selected asset to sell details
+				var selectedAssetToSell = document.querySelector('input[name="assetToSell"]:checked');
+				var assetToSellDetails = selectedAssetToSell ? selectedAssetToSell.value : null;
+
+				// Update the hidden input fields with opportunity and asset to sell details
+				document.getElementById("assetDetails").value = assetDetails;
+				document.getElementById("assetToSell").value = assetToSellDetails;
+
+				// Print the gathered details (for debugging)
+				console.log("Asset Details:", assetDetails);
+				console.log("Asset to Sell Details:", assetToSellDetails);
+
+				// Prevent the default form submission
+				event.preventDefault();
+
+				// Submit the form programmatically
+				document.getElementById("assetForm").submit();
+			}
+        
+    </script>
+</body>
+</html>
+

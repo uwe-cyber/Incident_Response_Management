@@ -1,0 +1,147 @@
+<!-- templates/manage.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Management</title>
+    <style>
+        /* Styles for the container and divs */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            height: 100vh;
+        }
+
+        .left-div, .center-div, .right-div {
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* Style for the left div */
+        .left-div {
+            width: 20%;
+        }
+
+        /* Style for the middle div */
+        .center-div {
+            width: 50%;
+            overflow-y: auto;
+        }
+
+        /* Style for the right div */
+        .right-div {
+            width: 25%;
+        }
+
+        /* Style for each selected image container */
+        .selected-image-container {
+            text-align: center;
+            margin: 10px;
+        }
+
+        /* Style for the selected images */
+        .selected-image {
+            width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        
+        /* Style for the selected images */
+        .center-image {
+            width: 60%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        
+        .smaller-center-image {
+            width: 30%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .test-button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .opportunity-image-container {
+		    position: relative;
+		    display: inline-block;
+		    margin: 5px;
+		    text-align: center;
+		    align-items: center;
+		    display: flex;
+		    flex-direction: column;
+		    align-items: center;
+		}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Div -->
+        <div class="left-div">
+		<h2>Assets Images</h2>
+		<div>Current Capital: ${{ .Capital }}</div>
+		<div>Current Reputation: {{ .Reputation }}</div>
+		{{ range $image, $cost := .AssetImages }}
+		<div class="selected-image-container">
+			<img class="selected-image" src="Cards/{{ $image }}" alt="{{ $image }}">
+		</div>
+		{{ end }}
+	</div>
+
+        <!-- Middle Div with Test button and Random Image -->
+        <div class="center-div">
+            <h1>Threats Summary</h1>
+            <br>
+            <div>Threats Not Fully Mitigated This Turn</div>
+            <!-- Show the random image on the home page -->
+            {{ range $image := .ThreatsToManage }}
+            <div class="selected-image-container">
+                <img class="center-image" src="Cards/{{ $image }}" alt="Threat To Manage">
+            </div>
+            {{ end }}
+            <br>
+            {{ if .ManagedThreats}}
+            	<div>Threats Mitigated This Turn</div>
+            	<div class="selected-image-container">
+		        {{ range $image := .ManagedThreats }}
+		            <img class="smaller-center-image" src="Cards/{{ $image }}" alt="Threat To Manage">
+		        {{ end }}
+		        </div>
+            {{ end }}
+            <br>
+            <button class="test-button" onclick="handleButtonClick()">Asset Management</button>
+        </div>
+
+        <!-- Right Div -->
+        <div class="right-div">
+			<h2>Active Threats</h2>
+			<div>These Will Impact Your Next Turn</div>
+			{{ range $image, $cost := .ActiveThreats }}
+			<div class="selected-image-container">
+				<img class="selected-image" src="Cards/{{ $image }}" alt="{{ $image }}">
+			</div>
+			{{ end }}
+		</div>
+    </div>
+    
+    <script>
+        // JavaScript function to handle the test button click
+		 function handleButtonClick() {
+            // Set a cookie indicating the "Opportunities" button was clicked
+            document.cookie = "opportunitiesClicked=true; path=/";
+            
+            // Reload the page to trigger the server to handle the "Opportunities" click
+            window.location.href = "/assets";
+        }
+        
+    </script>
+</body>
+</html>
+

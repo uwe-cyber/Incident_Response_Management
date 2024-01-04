@@ -1,0 +1,132 @@
+<!-- templates/opportunities.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opportunities</title>
+    <style>
+        /* Styles for the container and divs */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: auto;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .center-div {
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Style for each selected image container */
+        .selected-image-container {
+            text-align: center;
+            margin: 10px;
+        }
+
+        /* Style for the selected images */
+        .selected-image {
+            width: 90%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        /* Style for the selected images */
+        .center-image {
+            width: 60%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .test-button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .opportunity-image-container {
+            position: relative;
+            display: inline-block;
+            margin: 5px;
+            text-align: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Middle Div with Test button and Random Image -->
+        <div class="center-div">
+            <h1>Avaliable Contracts</h1>
+            <div>Current Capital: ${{ .Capital }}</div> 
+			<div>Current Reputation: {{ .Reputation }}</div>
+            <br>
+            {{ range $index, $imageName := .Opportunities }}
+			<label class="opportunity-image-container" for="opportunity_{{ $index }}">
+				<img class="center-image opportunity-image" src="Cards/Opportunities/{{ $imageName }}" alt="{{ $imageName }}">
+				<!-- Set the cost to 0 for opportunity cards -->
+				<input type="radio" id="opportunity_{{ $index }}" name="opportunity" value="{{ $imageName }}" data-cost="0">
+			</label>
+			{{ end }}
+			<br>
+			<!-- Form to submit data -->
+			<form id="testForm" action="/assets" method="post">
+				<!-- Add a hidden input field for opportunity details -->
+				<input type="hidden" id="opportunityDetails" name="opportunityDetails">
+			</form>
+            <br>
+			<button class="test-button" onclick="handleButtonClick()">Asset Management</button>
+        </div>
+
+
+    </div>
+    
+    <script>
+        // JavaScript function to handle the test button click
+			function handleButtonClick() {
+			console.log("Test");
+		    // Set a cookie indicating the Test button was clicked
+		    document.cookie = "testClicked=true; path=/";
+
+		    // Gather selected opportunity details
+		    var selectedOpportunity = document.querySelector('input[name="opportunity"]:checked');
+		    var opportunityDetails = selectedOpportunity ? selectedOpportunity.value : null;
+
+		    // Update the hidden input field with opportunity details
+		    document.getElementById("opportunityDetails").value = opportunityDetails;
+
+		    // Print the gathered opportunity details (for debugging)
+		    console.log("Opportunity Details:", opportunityDetails);
+
+		    // Prevent the default form submission
+		    event.preventDefault();
+
+		    // Submit the form programmatically
+		    document.getElementById("testForm").submit();
+		}
+
+    </script>
+</body>
+</html>
+

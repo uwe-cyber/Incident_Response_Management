@@ -1,0 +1,178 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Response Management</title>
+    <style>
+        /* Style for the container */
+        /* Styles for the container and divs */
+        body {
+            display: flex;
+            align-items: center;
+            height: auto;
+            margin: 0;
+        }
+        .container {
+			display: flex;
+			flex-direction: column; /* Stack items vertically */
+			align-items: center; /* Center items horizontally */
+			min-height: 100vh; /* Set minimum height to 100% of the viewport */
+		}
+
+        /* Style for the image selection container on the right */
+        .selection-container {
+            width: 10%;
+            border-left: 1px solid #ccc; /* Add a border to separate it from the main content */
+            padding: 10px;
+            box-sizing: border-box; /* Include padding and border in the width */
+            overflow-y: auto; /* Add a scrollbar if there are too many selected images */
+        }
+
+        /* Style for each image container */
+        .image-container {
+        	display: flex;
+            text-align: center;
+            align-items: center;
+            margin: 10px;
+            transition: opacity 0.3s ease-in-out; /* Add a transition for a smooth fade effect */
+        }
+        
+        .image-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+        }
+
+        /* Style for the images */
+        .image {
+            width: 100%; /* Set the width to 20% of the container */
+            height: auto; /* Maintain aspect ratio */
+            margin-bottom: 10px; /* Add some spacing between images */
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Style for the images on hover */
+        .image:hover {
+            transform: scale(1.2); /* Increase the scale factor for a larger hover effect */
+            box-shadow: 0 0 20px rgba(0, 0, 255, 0.5); /* Blue edge glow */
+        }
+
+        /* Style for the checkboxes */
+        .checkbox {
+            margin-top: 5px; /* Add some spacing above the checkbox */
+            display: block; /* Make the checkbox a block element */
+            margin-left: auto; /* Center-align the checkbox */
+            margin-right: auto; /* Center-align the checkbox */
+        }
+
+        /* Style for the cost labels */
+        .cost-label {
+            font-size: 12px;
+            color: #888;
+        }
+        /* Style for the title */
+		h1 {
+		    text-align: center; /* Center-align the text */
+		    font-size: 24px; /* Adjust font size as needed */
+		}
+
+		/* Style for the total value display */
+		#totalValueDisplay {
+		    font-size: 18px; /* Adjust font size as needed */
+		}
+		
+		input[type="submit"] {
+            width: 10%; /* Set the width to 50% of the container */
+            margin: 20px auto; /* Add margin for centering and spacing */
+            padding: 10px; /* Add padding for a larger button */
+            font-size: 16px; /* Adjust font size as needed */
+        }
+        
+        form {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="imageContainer">
+        <h1>
+			<span class="title">Choose your assets!</span>
+			<br>
+			Capital Left: $<span id="totalValueDisplay">75000.00</span>
+		</h1>
+
+
+        <form id="imageForm" action="/submit" method="post">
+            <div class="image-container">
+                {{ range $image, $cost := .ImageInfo }}
+                    <div class="image-info">
+                        <img class="image" src="Cards/{{ $image }}" alt="{{ $image }}">
+                        <div class="cost-label">Cost: ${{ $cost }}</div>
+                        <input type="checkbox" class="checkbox" name="selectedImages_{{ $image }}" value="{{ $image }}">
+                        <input type="hidden" name="cost_{{ $image }}" value="{{ $cost }}">
+                    </div>
+                {{ end }}
+            </div>
+            <input type="hidden" id="totalValueInput" name="totalValue" value="75000">
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get the form, image container, and submit button elements
+        const imageForm = document.getElementById("imageForm");
+        const totalValueDisplay = document.getElementById("totalValueDisplay");
+        const totalValueInput = document.getElementById("totalValueInput");
+        const submitButton = document.querySelector('input[type="submit"]');
+
+        // Set the initial value
+        let totalValue = 75000;
+        totalValueDisplay.textContent = totalValue.toFixed(2);
+        totalValueInput.value = totalValue.toFixed(2);
+
+        // Add a change event listener to each checkbox
+        const checkboxes = document.querySelectorAll(".checkbox");
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener("change", function() {
+                // Find the container of the clicked checkbox
+                const container = checkbox.closest(".image-info");
+
+                // Get the cost associated with the checkbox
+                const cost = parseFloat(container.querySelector(".cost-label").textContent.replace("Cost: $", ""));
+
+                // Update the total value based on whether the checkbox is checked or unchecked
+                totalValue = checkbox.checked ? totalValue - cost : totalValue + cost;
+
+                // Cap the total value at a maximum of 75000
+                totalValue = Math.min(totalValue, 75000);
+
+                // Update the total value display
+                totalValueDisplay.textContent = totalValue.toFixed(2);
+                totalValueInput.value = totalValue.toFixed(2);
+
+                // Disable the submit button if the total value is below 0 or above 75000
+                submitButton.disabled = totalValue < 0 || totalValue > 75000;
+            });
+        });
+
+        // Add a submit event listener to the form
+        imageForm.addEventListener("submit", function(event) {
+            // If the cookie is set, the total value is below 0, or above 75000, prevent form submission
+            if (document.cookie.includes("noImages") || totalValue < 0 || totalValue > 75000) {
+                event.preventDefault();
+                alert("Cannot submit the form. Please make sure the total value is between 0 and 75000.");
+            } else {
+                // Otherwise, remove the cookie to allow images to be shown on subsequent requests
+                document.cookie = "noImages=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            }
+        });
+    });
+</script>
+</body>
+</html>
+

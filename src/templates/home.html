@@ -1,0 +1,199 @@
+<!-- templates/home.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Response Management</title>
+    <style>
+        /* Styles for the container and divs */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            height: 100vh;
+        }
+
+        .left-div, .center-div, .right-div {
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* Style for the left div */
+        .left-div {
+            width: 20%;
+        }
+
+        /* Style for the middle div */
+        .center-div {
+            width: 50%;
+            overflow-y: auto;
+        }
+
+        /* Style for the right div */
+        .right-div {
+            width: 25%;
+        }
+
+        /* Style for each selected image container */
+        .selected-image-container {
+            text-align: center;
+            margin: 10px;
+        }
+
+        /* Style for the selected images */
+        .selected-image {
+            width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        
+        /* Style for the selected images */
+        .center-image {
+            width: 60%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .test-button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .opportunity-image-container {
+		    position: relative;
+		    display: inline-block;
+		    margin: 5px;
+		    text-align: center;
+		    align-items: center;
+		    display: flex;
+		    flex-direction: column;
+		    align-items: center;
+		}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Div -->
+        <div class="left-div">
+		{{ if .ActiveThreats }}
+			<h2>Active Threats</h2>
+			<div>These Will Impact Your Next Turn</div>
+			{{ range $image, $cost := .ActiveThreats }}
+			<div class="selected-image-container">
+				<img class="selected-image" src="Cards/{{ $image }}" alt="{{ $image }}">
+			</div>
+			{{ end }}
+		{{ else }}
+			<h2>Active Contracts</h2>
+			{{ range $image, $cost := .OpportunityImages }}
+			<div class="selected-image-container">
+				<img class="selected-image" src="Cards/Opportunities/{{ $image }}" alt="{{ $image }}">
+			</div>
+			{{ end }}
+		{{ end }}
+	</div>
+
+        <!-- Middle Div with Test button and Random Image -->
+        <div class="center-div">
+            <h1>Turn {{ .Turn }}</h1>
+            <div>Current Capital: ${{ .Capital }}</div> 
+            {{ if .InterestCharged }}
+            	<div>Interest Charged: ${{ .InterestCharged }}</div>
+            {{ end }}
+			<div>Current Reputation: {{ .Reputation }}</div>
+            <br>
+            <!-- Show the random image on the home page -->
+            <form id="manageForm" action="/manage" method="post">
+                <!-- Add a hidden input field for the random image URL -->
+                {{ if .RandomImageURL }}
+                <div class="selected-image-container">
+		            <img class="center-image" src="{{ .RandomImageURL }}" alt="Random Threat Image">
+		        </div>
+                <input type="hidden" id="threatToManage" name="threatToManage" value="{{ .RandomImageURL }}">
+                {{ end }}
+                {{ if eq .ThreatMitigated false }}
+		            {{ if eq .EnableTempSoC true }}
+		            	<div>Enable SoC for 1 turn?</div>
+		        		<input type="checkbox" class="checkbox" id="enableTempSoC" name="enableTempSoC" value="true">
+		        	{{ end }}
+		        {{ end }}
+                <!-- Add a hidden input field for opportunity details -->
+                <input type="hidden" id="threatDetails" name="threatDetails">
+            </form>
+			<br>
+			<!-- Form to submit data -->
+			<form id="testForm" action="/turn" method="post">
+				<!-- Add a hidden input field for opportunity details -->
+				<input type="hidden" id="opportunityDetails" name="opportunityDetails">
+			</form>
+            <br>
+            {{ if .TestClicked }}
+                {{ if eq .ThreatMitigated true }}
+                    <button class="opportunities-button" onclick="handleOpportunitiesButtonClick()">Opportunities</button>
+                {{ else }}
+                    <button class="test-button" onclick="handleManageButtonClick()">Manage Threats</button>
+                {{ end }}
+            {{ else }}
+                <button class="test-button" onclick="handleTestButtonClick()">Begin!</button>
+            {{ end }}
+        </div>
+
+        <!-- Right Div -->
+        <div class="right-div">
+			<h2>Active Assets</h2>
+			{{ range $image, $cost := .AssetImages }}
+			<div class="selected-image-container">
+				<img class="selected-image" src="Cards/{{ $image }}" alt="{{ $image }}">
+				<div>Cost: ${{ $cost }}</div>
+			</div>
+			{{ end }}
+		</div>
+    </div>
+    
+    <script>
+        // JavaScript function to handle the test button click
+			function handleTestButtonClick() {
+			console.log("Test");
+		    // Set a cookie indicating the Test button was clicked
+		    document.cookie = "testClicked=true; path=/";
+
+		    // Gather selected opportunity details
+		    var selectedOpportunity = document.querySelector('input[name="opportunity"]:checked');
+		    var opportunityDetails = selectedOpportunity ? selectedOpportunity.value : null;
+
+		    // Update the hidden input field with opportunity details
+		    document.getElementById("opportunityDetails").value = opportunityDetails;
+
+		    // Print the gathered opportunity details (for debugging)
+		    console.log("Opportunity Details:", opportunityDetails);
+
+		    // Prevent the default form submission
+		    event.preventDefault();
+
+		    // Submit the form programmatically
+		    document.getElementById("testForm").submit();
+		}
+
+        // JavaScript function to handle the "Opportunities" button click
+        function handleOpportunitiesButtonClick() {
+            // Set a cookie indicating the "Opportunities" button was clicked
+            document.cookie = "opportunitiesClicked=true; path=/";
+            
+            // Reload the page to trigger the server to handle the "Opportunities" click
+            window.location.href = "/opportunities";
+        }
+
+        // JavaScript function to handle the "Manage" button click
+         function handleManageButtonClick() {
+            // Submit the form to the "/manage" endpoint
+            document.getElementById("manageForm").submit();
+        }
+        
+    </script>
+</body>
+</html>
+
