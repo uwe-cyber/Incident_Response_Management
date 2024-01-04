@@ -18,4 +18,6 @@ A tool or security measure which helps mitigate incidents
 
 A chance for players to earn more capital or reputation
 
-Capital and reputation are the scoring system used in the game. Players pay capital to purchase assets. These can then allow them to have business opportunities. Reputation and capital are gained through business opportunities and lost through incidents. Incidents, if unmitigated, can also cause players to lose existing Business Opportunities. Both the card templates and browser based versions of this game are avaliable in this repo 
+Capital and reputation are the scoring system used in the game. Players pay capital to purchase assets. These can then allow them to have business opportunities. Reputation and capital are gained through business opportunities and lost through incidents. Incidents, if unmitigated, can also cause players to lose existing Business Opportunities. 
+
+Both the card templates and browser based versions of this game are avaliable in this repo 
