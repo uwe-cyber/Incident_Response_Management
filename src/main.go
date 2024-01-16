@@ -923,8 +923,9 @@ func HandleThreats(w http.ResponseWriter, r *http.Request) {
 								threatMitigated = true
 							} else {
 								partiallyMitigated = true
-								if containsSubstring( asset, "IPS"){
+								if containsSubstring(asset, "IPS"){
 									mitigationType = "1"
+									threatMitigated = true
 								} 
 							}
 						} else {
@@ -980,6 +981,7 @@ func HandleThreats(w http.ResponseWriter, r *http.Request) {
 								partiallyMitigated = true
 								if containsSubstring( asset, "IPS"){
 									mitigationType = "1"
+									threatMitigated = true
 								}
 							}
 						} else {
