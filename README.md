@@ -21,3 +21,7 @@ A chance for players to earn more capital or reputation
 Capital and reputation are the scoring system used in the game. Players pay capital to purchase assets. These can then allow them to have business opportunities. Reputation and capital are gained through business opportunities and lost through incidents. Incidents, if unmitigated, can also cause players to lose existing Business Opportunities. 
 
 Both the card templates and browser based versions of this game are avaliable in this repo 
+
+### Using the binary files
+
+If you download and run the binary files you will still need the assets from the `src` folder. Your binary file will need to be in the same directory as both `Cards` and `templates`
